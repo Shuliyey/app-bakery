@@ -50,4 +50,11 @@ case "${provider}" in
 esac
 
 ln -sf ${dir_name}/packer.d/${service}.${provider}.json ${dir_name}/${service}.${provider}.json
+
+for f in $(find "${dir_name}/packer.d" -name "*.sh" -maxdepth 1); do
+  if [ -x "${f}" ]; then
+    ${f}
+  fi
+done
+
 packer build -var-file=$(([ -f ${dir_name}/var.${provider}.${region}.json ] && echo ${dir_name}/var.${provider}.${region}.json) || echo ${dir_name}/var.${provider}.json) ${dir_name}/${service}.${provider}.json

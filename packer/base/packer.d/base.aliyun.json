@@ -1,0 +1,82 @@
+{
+    "variables": {
+      "app": "{{env `APP`}}",
+      "access_key": "{{env `ALICLOUD_ACCESS_KEY`}}",
+      "secret_key": "{{env `ALICLOUD_SECRET_KEY`}}",
+      "region": "{{env `ALICLOUD_REGION`}}",
+      "copy_regions": "{{env `COPY_REGIONS`}}",
+      "aliyun_cloudmonitor_version": "{{env `ALIYUN_CLOUDMONITOR_VERSION`}}",
+      "aliyungocli_version": "{{env `ALIYUNGOCLI_VERSION`}}",
+      "aliyunpycli_version": "{{env `ALIYUNPYCLI_VERSION`}}",
+      "instance_type": "ecs.n4.small",
+      "termtosvg_version": "{{env `TERMTOSVG_VERSION`}}",
+      "vpc_id": "{{env `VPC_ID`}}",
+      "vswitch_id": "{{env `VSWITCH_ID`}}",
+      "http_proxy": "{{env `VPC_HTTP_PROXY`}}",
+      "https_proxy": "{{env `VPC_HTTPS_PROXY`}}"
+    },
+    "builders": [{
+      "type":"alicloud-ecs",
+      "access_key":"{{user `access_key`}}",
+      "secret_key":"{{user `secret_key`}}",
+      "region":"{{user `region`}}",
+      "image_name":"{{user `app`}}-base-{{isotime \"2006-Jan-02_15-04-05\"}}",
+      "instance_name":"packer-base-{{uuid}}-{{isotime \"2006-Jan-02_15-04-05\"}}",
+      "source_image":"{{user `source_image`}}",
+      "image_copy_regions":"{{user `copy_regions`}}",
+      "ssh_username":"root",
+      "instance_type": "{{user `instance_type`}}",
+      "io_optimized":"true",
+      "internet_charge_type":"PayByTraffic",
+      "image_description":"{{user `app`}} base image (created on {{isotime}})",
+      "vpc_id": "{{user `vpc_id`}}",
+      "vswitch_id": "{{user `vswitch_id`}}",
+      "image_force_delete": "true"
+    }],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "scripts/bash_colors.sh",
+        "destination": "/tmp/bash_colors.sh"
+      },
+      {
+        "type": "file",
+        "source": "scripts/dep.sh",
+        "destination": "/tmp/dep.sh"
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "mkdir -p /tmp/dep.d"
+        ]
+      },
+      {
+        "type": "file",
+        "source": "scripts/dep.d/aliyun.sh",
+        "destination": "/tmp/dep.d/aliyun.sh"
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "chmod +x /tmp/dep.sh",
+          "/tmp/dep.sh --colors"
+        ],
+        "environment_vars": [
+          "ALIYUN_CLOUDMONITOR_VERSION={{user `aliyun_cloudmonitor_version`}}",
+          "ALIYUNGOCLI_VERSION={{user `aliyungocli_version`}}",
+          "ALIYUNPYCLI_VERSION={{user `aliyunpycli_version`}}",
+          "TERMTOSVG_VERSION={{user `termtosvg_version`}}"
+        ]
+      },
+      {
+        "type": "ansible",
+        "playbook_file": "ansible/aliyun/main.yml",
+        "user": "root",
+        "extra_arguments": [
+          "--extra-vars",
+          "aliyun_cloudmonitor_version={{user `aliyun_cloudmonitor_version`}} aliyungocli_version={{user `aliyungocli_version`}} aliyunpycli_version={{user `aliyunpycli_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}}"
+        ]
+      }
+    ]
+  }
+  

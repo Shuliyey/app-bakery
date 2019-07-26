@@ -50,8 +50,8 @@ esac
 
 account_hash=$(echo -n "${access_key}:${secret_key}" | openssl dgst -sha256)
 
-var_file="${dir_name}/vars/var.${provider}.${account_id}.${region}.json"
-var_file_local="${dir_name}/vars/var.${provider}.${account_id}.${account_hash}.${region}.json"
+var_file="${dir_name}/vars.d/var.${provider}.${account_id}.${region}.json"
+var_file_local="${dir_name}/vars.d/var.${provider}.${account_id}.${account_hash}.${region}.json"
 
 if [ -f ${var_file_local} ]; then
   ln -sf ${var_file_local} ${dir_name}/var.${provider}.${region}.json
@@ -59,6 +59,6 @@ elif [ -f ${var_file} ]; then
   ln -sf ${var_file} ${dir_name}/var.${provider}.${region}.json
 fi
 
-if [ -f "${dir_name}/vars/var.${provider}.json" ]; then
-  ln -sf ${dir_name}/vars/var.${provider}.json ${dir_name}/var.${provider}.json
+if [ -f "${dir_name}/vars.d/var.${provider}.json" ]; then
+  ln -sf ${dir_name}/vars.d/var.${provider}.json ${dir_name}/var.${provider}.json
 fi

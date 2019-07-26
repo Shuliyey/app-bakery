@@ -51,10 +51,10 @@ get_default() {
 
 check_dep() {
   local dir_name=$(cd `dirname $0` && pwd)
-  if [ -f "${dir_name}/dep.d/${provider}.dep.sh" ]; then
-    eval "$(cat ${dir_name}/dep.d/${provider}.dep.sh)"
+  if [ -f "${dir_name}/dep.d/${provider}.sh" ]; then
+    eval "$(cat ${dir_name}/dep.d/${provider}.sh)"
 
-    ################# example of ${dir_name}/dep.d/${provider}.dep.sh #################
+    ################# example of ${dir_name}/dep.d/${provider}.sh #################
     # local DEFAULT_COPY_REGIONS=""
     # local DEFAULT_VPC_ID=""
     # local DEFAULT_VSWITCH_ID=""
@@ -72,7 +72,7 @@ check_dep() {
     # local optional=()
     ###################################################################################
   else
-    errorMsg "unkown provider: ${RED}${provider}${NC}, ${CYAN}${dir_name}/dep.d/${provider}.dep.sh${NC} ${RED}doesn't exist${NC}, exiting"
+    errorMsg "unkown provider: ${RED}${provider}${NC}, ${CYAN}${dir_name}/dep.d/${provider}.sh${NC} ${RED}doesn't exist${NC}, exiting"
     exit 1
   fi
 

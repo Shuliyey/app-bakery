@@ -1,0 +1,1 @@
+../../.scripts/bash_colors.sh
