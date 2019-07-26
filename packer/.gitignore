@@ -1,0 +1,21 @@
+# log files
+*.log
+
+# key files
+*.pem
+
+# vi swap files
+*.swp
+
+# ansible retry files
+*.retry
+
+# ansible inventory files
+hosts
+
+# packer
+## cache objects
+packer_cache/
+
+## built boxes
+*.box
