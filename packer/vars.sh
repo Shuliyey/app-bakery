@@ -24,8 +24,8 @@ done
 
 ################### core ###################
 
-eval "$(${dir_name}/dep.sh --provider="${provider}" --set_default)"
 source_env "${dir_name}/.env"
+eval "$(${dir_name}/dep.sh --provider="${provider}" --set_default)"
 
 case "${provider}" in
   aliyun)
