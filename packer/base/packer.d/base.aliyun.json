@@ -5,11 +5,13 @@
       "secret_key": "{{env `ALICLOUD_SECRET_KEY`}}",
       "region": "{{env `ALICLOUD_REGION`}}",
       "copy_regions": "{{env `COPY_REGIONS`}}",
+      "build_version": "{{env `BUILD_VERSION`}}",
+      "build_host": "{{env `BUILD_HOST`}}",
       "aliyun_cloudmonitor_version": "{{env `ALIYUN_CLOUDMONITOR_VERSION`}}",
       "aliyungocli_version": "{{env `ALIYUNGOCLI_VERSION`}}",
       "aliyunpycli_version": "{{env `ALIYUNPYCLI_VERSION`}}",
-      "instance_type": "ecs.n4.small",
       "termtosvg_version": "{{env `TERMTOSVG_VERSION`}}",
+      "instance_type": "ecs.n4.small",
       "vpc_id": "{{env `VPC_ID`}}",
       "vswitch_id": "{{env `VSWITCH_ID`}}",
       "http_proxy": "{{env `VPC_HTTP_PROXY`}}",
@@ -24,14 +26,21 @@
       "instance_name":"packer-base-{{uuid}}-{{isotime \"2006-Jan-02_15-04-05\"}}",
       "source_image":"{{user `source_image`}}",
       "image_copy_regions":"{{user `copy_regions`}}",
-      "ssh_username":"root",
+      "ssh_username":"{{user `ssh_username`}}",
       "instance_type": "{{user `instance_type`}}",
       "io_optimized":"true",
       "internet_charge_type":"PayByTraffic",
       "image_description":"{{user `app`}} base image (created on {{isotime}})",
       "vpc_id": "{{user `vpc_id`}}",
       "vswitch_id": "{{user `vswitch_id`}}",
-      "image_force_delete": "true"
+      "image_force_delete": "true",
+      "tags": {
+        "Name": "{{user `app`}}-base-{{user `build_version`}}",
+        "DateTime": "{{isotime \"2006-Jan-02T15:04:05Z\"}}",
+        "BuildHost": "{{user `build_host`}}",
+        "BuildEngine": "packer-{{packer_version}}",
+        "BuildVersion": "{{user `build_version`}}"
+      }
     }],
     "provisioners": [
       {

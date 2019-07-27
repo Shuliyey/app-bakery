@@ -57,4 +57,14 @@ for f in $(find "${dir_name}/packer.d" -name "*.sh" -maxdepth 1); do
   fi
 done
 
-packer build -var-file=$(([ -f ${dir_name}/var.${provider}.${region}.json ] && echo ${dir_name}/var.${provider}.${region}.json) || echo ${dir_name}/var.${provider}.json) ${dir_name}/${service}.${provider}.json
+var_file_args=""
+
+for var_file in "${dir_name}/var.${provider}.json" "${dir_name}/var.${provider}.${region}.json" ; do
+  if [ -f "${var_file}" ]; then
+    var_file_args="${var_file_args} -var-file=${var_file}"
+  fi
+done
+
+var_file_args="$(echo ${var_file_args})"
+
+packer build ${var_file_args} $([ "$(echo ${DEBUG})" == "true" ] && echo -debug) ${dir_name}/${service}.${provider}.json

@@ -1,0 +1,98 @@
+{
+  "variables": {
+    "app": "{{env `APP`}}",
+    "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "region": "{{env `AWS_DEFAULT_REGION`}}",
+    "ami_regions": "{{env `AMI_REGIONS`}}",
+    "build_version": "{{env `BUILD_VERSION`}}",
+    "build_host": "{{env `BUILD_HOST`}}",
+    "awscli_version": "{{env `AWSCLI_VERSION`}}",
+    "termtosvg_version": "{{env `TERMTOSVG_VERSION`}}",
+    "instance_type": "t2.small",
+    "vpc_id": "{{env `VPC_ID`}}",
+    "subnet_id": "{{env `SUBNET_ID`}}",
+    "source_ami_filter_name": "amazon-eks-node-1.13-v*",
+    "source_ami_filter_owners": "602401143452",
+    "http_proxy": "{{env `VPC_HTTP_PROXY`}}",
+    "https_proxy": "{{env `VPC_HTTPS_PROXY`}}"
+  },
+  "builders": [{
+    "type":"amazon-ebs",
+    "access_key":"{{user `access_key`}}",
+    "secret_key":"{{user `secret_key`}}",
+    "region":"{{user `region`}}",
+    "ami_name":"{{user `app`}}-base-{{isotime \"2006-Jan-02_15-04-05\"}}",
+    "run_tags": {
+      "Name": "packer-base-{{uuid}}-{{isotime \"2006-Jan-02_15-04-05\"}}"
+    },
+    "source_ami":"{{user `source_ami`}}",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "name": "{{user `source_ami_filter_name`}}",
+        "root-device-type": "ebs"
+      },
+      "owners": "{{user `source_ami_filter_owners`}}",
+      "most_recent": true
+    },
+    "ami_regions":"{{user `ami_regions`}}",
+    "ssh_username":"{{user `ssh_username`}}",
+    "instance_type": "{{user `instance_type`}}",
+    "associate_public_ip_address":"true",
+    "ami_description":"{{user `app`}} base image (created on {{isotime}})",
+    "vpc_id": "{{user `vpc_id`}}",
+    "subnet_id": "{{user `subnet_id`}}",
+    "force_deregister": "true",
+    "tags": {
+      "Name": "{{user `app`}}-base-{{user `build_version`}}",
+      "DateTime": "{{isotime \"2006-Jan-02T15:04:05Z\"}}",
+      "BuildHost": "{{user `build_host`}}",
+      "BuildEngine": "packer-{{packer_version}}",
+      "BuildVersion": "{{user `build_version`}}"
+    }
+  }],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "scripts/bash_colors.sh",
+      "destination": "/tmp/bash_colors.sh"
+    },
+    {
+      "type": "file",
+      "source": "scripts/dep.sh",
+      "destination": "/tmp/dep.sh"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "mkdir -p /tmp/dep.d"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "scripts/dep.d/aws.sh",
+      "destination": "/tmp/dep.d/aws.sh"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "chmod +x /tmp/dep.sh",
+        "/tmp/dep.sh --colors"
+      ],
+      "environment_vars": [
+        "AWSCLI_VERSION={{user `awscli_version`}}",
+        "TERMTOSVG_VERSION={{user `termtosvg_version`}}"
+      ]
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "ansible/aws/main.yml",
+      "user": "root",
+      "extra_arguments": [
+        "--extra-vars",
+        "awscli_version={{user `awscli_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}}"
+      ]
+    }
+  ]
+}
