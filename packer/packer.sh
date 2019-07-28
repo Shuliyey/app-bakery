@@ -53,7 +53,7 @@ ln -sf ${dir_name}/packer.d/${service}.${provider}.json ${dir_name}/${service}.$
 
 for f in $(find "${dir_name}/packer.d" -name "*.sh" -maxdepth 1); do
   if [ -x "${f}" ]; then
-    ${f}
+    ${f} --provider="${provider}" --service="${service}"
   fi
 done
 
