@@ -11,6 +11,8 @@ dir_name=$(cd `dirname $0` && pwd)
 
 password="$(openssl rand -base64 32)"
 
+provider=".provider"
+
 for kv in "$@"; do
   case "${kv}" in
     --provider=*)
@@ -31,7 +33,7 @@ done
 ################### core ###################
 
 ssh_ca_file="${dir_name}/../ansible/${provider}/roles/${service}/files/ssh/authorized_keys/.ca"
-ssh_ca_info_file="${dir_name}/ssh_ca.info"
+ssh_ca_info_file="${dir_name}/ssh_ca.${provider//./}.info"
 
 if [ ! -f "${ssh_ca_file}" ]; then
   msg="generating ca key (${CYAN}${ssh_ca_file}${NC}) ..."
