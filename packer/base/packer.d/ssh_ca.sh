@@ -30,10 +30,10 @@ done
 
 ################### core ###################
 
-ssh_ca_file="${dir_name}/../ansible/${provider}/roles/${service}/files/ssh/authorized_keys/ca"
+ssh_ca_file="${dir_name}/../ansible/${provider}/roles/${service}/files/ssh/authorized_keys/.ca"
 ssh_ca_info_file="${dir_name}/ssh_ca.info"
 
-if [ ! -f "${dir_name}/../ansible/${provider}/roles/${service}/files/ssh/authorized_keys/ca" ]; then
+if [ ! -f "${ssh_ca_file}" ]; then
   msg="generating ca key (${CYAN}${ssh_ca_file}${NC}) ..."
   infoMsg "${msg}"
   mkdir -p "$(dirname "${ssh_ca_file}")"
