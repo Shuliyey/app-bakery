@@ -1,6 +1,7 @@
 {
     "variables": {
       "app": "{{env `APP`}}",
+      "description": "{{env `DESCRIPTION`}}",
       "access_key": "{{env `ALICLOUD_ACCESS_KEY`}}",
       "secret_key": "{{env `ALICLOUD_SECRET_KEY`}}",
       "region": "{{env `ALICLOUD_REGION`}}",
@@ -10,6 +11,7 @@
       "aliyun_cloudmonitor_version": "{{env `ALIYUN_CLOUDMONITOR_VERSION`}}",
       "aliyungocli_version": "{{env `ALIYUNGOCLI_VERSION`}}",
       "aliyunpycli_version": "{{env `ALIYUNPYCLI_VERSION`}}",
+      "yq_version": "{{env `YQ_VERSION`}}",
       "termtosvg_version": "{{env `TERMTOSVG_VERSION`}}",
       "instance_type": "ecs.n4.small",
       "vpc_id": "{{env `VPC_ID`}}",
@@ -74,6 +76,7 @@
           "ALIYUN_CLOUDMONITOR_VERSION={{user `aliyun_cloudmonitor_version`}}",
           "ALIYUNGOCLI_VERSION={{user `aliyungocli_version`}}",
           "ALIYUNPYCLI_VERSION={{user `aliyunpycli_version`}}",
+          "YQ_VERSION={{user `yq_version`}}",
           "TERMTOSVG_VERSION={{user `termtosvg_version`}}"
         ]
       },
@@ -83,7 +86,7 @@
         "user": "root",
         "extra_arguments": [
           "--extra-vars",
-          "aliyun_cloudmonitor_version={{user `aliyun_cloudmonitor_version`}} aliyungocli_version={{user `aliyungocli_version`}} aliyunpycli_version={{user `aliyunpycli_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}}"
+          "app={{user `app`}} description={{user `description`}} cloud_provider=aliyun aliyun_cloudmonitor_version={{user `aliyun_cloudmonitor_version`}} aliyungocli_version={{user `aliyungocli_version`}} aliyunpycli_version={{user `aliyunpycli_version`}} yq_version={{user `yq_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}}"
         ]
       }
     ]

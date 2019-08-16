@@ -1,2 +1,17 @@
 ---
-# handlers file for base
+# handlers file for base (main.yml)
+
+- name: stop and disable cloudmonitor
+  systemd:
+    daemon_reload: yes
+    name: cloudmonitor
+    state: stopped
+    enabled: no
+  when: cloud_provider is "aliyun"
+
+- name: start and enable lvm2-metad
+  systemd:
+    daemon_reload: yes
+    name: lvm2-lvmetad
+    state: started
+    enabled: yes

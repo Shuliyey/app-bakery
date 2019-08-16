@@ -1,0 +1,173 @@
+---
+# tasks file for base (users.yml)
+
+- name: update /etc/skel (termtosvg)
+  blockinfile:
+    path: /etc/skel/.profile
+    block: |
+
+      if command -v checkTermToSVG >/dev/null && [ "$(checkTermToSVG)" != "true" ]; then
+        local _id="$(whoami)-$(date +%FT%T%Z -u)"
+        termtosvg /tmp/termtosvg-${_id}.svg -c "script -f /tmp/script-${_id}.script"
+        exit
+      fi
+
+- name: create /etc/profile.d/termtosvg.sh
+  copy:
+    src:   profile.d/termtosvg.sh
+    dest:  /etc/profile.d/termtosvg.sh
+    owner: root
+    group: root
+    mode: 0644
+
+- name: create /etc/profile.d/script.sh
+  copy:
+    src:   profile.d/script.sh
+    dest:  /etc/profile.d/script.sh
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "create {{app}} group"
+  group:
+    name:   "{{app}}"
+    state:  present
+
+- name: "create {{app}} user"
+  user:
+    name:     "{{app}}"
+    group:    "{{app}}"
+    state:    present
+    comment:  "{{app}}{{ " (" + description + ")" if  else "" }}"
+
+- name: "create {{app}} admin group"
+  group:
+    name:   "{{app}}_admin"
+    state:  present
+
+- name: "create {{app}} admin user"
+  user:
+    name:     "{{app}}_admin"
+    group:    "{{app}}_admin"
+    state:    present
+    comment:  "{{app}} Admin{{ " (" + description + ")" if  else "" }}"
+
+- name: "add {{app}} sudoers permissions"
+  copy:
+    src:      "sudoers.d/app"
+    dest:     "/etc/sudoers.d/{{app}}"
+    owner:    root
+    group:    root
+    mode:     0440
+    validate: /usr/sbin/visudo -cf %s
+
+- name: "create {{app}}_admin staff"
+  user:
+    name:     "{{ item.username }}"
+    state:    present
+    groups:   "{{app}}_admin"
+  with_items: "{{ user_list }}"
+  when: user_list is defined
+
+- name: "create .ssh dir for {{app}}_admin staff"
+  file:
+    path:   "/home/{{ item.username }}/.ssh"
+    owner:  "{{ item.username }}"
+    group:  "{{ item.username }}"
+    state:  directory
+    mode:   0700
+  with_items: "{{ user_list }}"
+  when: user_list is defined
+
+- name: "create /opt/{{app}} dir"
+  file:
+    path: "/opt/{{app}}"
+    owner: root
+    group: "{{app}}"
+    state: directory
+    mode: 0750
+
+- name: "create /opt/{{app}}/bin dir"
+  file:
+    path: "/opt/{{app}}/bin"
+    owner: root
+    group: "{{app}}"
+    state: directory
+    mode: 0750
+
+- name: "create /opt/{app}}/bin/clean.sh"
+  copy:
+    src:    bin/clean.sh
+    dest:   "/opt/{{app}}/bin/clean.sh"
+    owner:  root
+    group:  "{{app}}"
+    mode:   0750
+
+- name: "add /opt/{{app}}/bin/clean.sh (0 0 * * *) entry to cron"
+  cron:
+    name: "clean"
+    hour: "0"
+    minute: "0"
+    job: "/opt/{{app}}/bin/clean.sh"
+
+- name: "ensure ssh keys in authorized_keys of {{app}}_admin staff"
+  copy:
+    src:    "ssh/authorized_keys/{{ item.username }}"
+    dest:   "/home/{{ item.username }}/.ssh/authorized_keys"
+    owner:  "{{ item.username }}"
+    group:  "{{ item.username }}"
+    mode:   0600
+  with_items: "{{ user_list }}"
+  when: user_list is defined
+
+- name: "copy {{app}} ssh ca cert"
+  copy:
+    src:    ssh/authorized_keys/ca
+    dest:   "{{ ssh_ca_cert_path }}"
+    owner:  root
+    group:  root
+    mode:   0400
+
+- name: "add {{app}} ssh TrustUserCaKeys"
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^\s*#(#|\s)*TrustedUserCAKeys\s+.*$'
+    line: "TrustedUserCAKeys {{ ssh_ca_cert_path }}"
+
+- name: "add {{app}} ssh revoked keys"
+  copy:
+    content: ""
+    dest: "{{ ssh_revoked_keys_path }}"
+    group: root
+    owner: root
+    mode: 0600
+
+- name: "add {{app}} ssh RevokedKeys"
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^\s*#(#|\s)*RevokedKeys\s+.*$'
+    line: "RevokedKeys {{ ssh_revoked_keys_path }}"
+
+- name: "add {{app}} ssh authorized principals directory"
+  file:
+    path: "{{ ssh_authorized_principals_file_keys_path }}"
+    group: root
+    owner: root
+    state: directory
+    mode: 0700
+
+# - name: "add {{app}} ssh AuthorizedPrincipalsFile"
+#   lineinfile:
+#     path: /etc/ssh/sshd_config
+#     state: present
+#     regexp: '^\s*#(#|\s)*AuthorizedPrincipalsFile\s+.*$'
+#     line: "AuthorizedPrincipalsFile {{ ssh_authorized_principals_file_keys_path }}"
+
+- name: disable root ssh
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^\s*#(#|\s)*PermitRootLogin\s+.*$'
+    line: "PermitRootLogin no"

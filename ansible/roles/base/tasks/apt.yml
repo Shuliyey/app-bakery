@@ -1,0 +1,26 @@
+---
+# tasks file for base (apt.yml)
+
+- name: install latest apt packages
+  apt:
+    name:
+      - bash
+      - unzip
+      - gzip
+      - tar
+      - curl
+      - jq
+      - ssh
+      - openssh-sftp-server
+      - dnsutils
+      - tmux
+      - net-tools
+      - lvm2
+      - python3
+      - python3-pip
+      - python-pip
+      - mdadm
+    state: latest
+  when: ansible_os_family == 'Debian'
+  notify:
+    - start and enable lvm2-metad

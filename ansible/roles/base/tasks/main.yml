@@ -1,2 +1,10 @@
 ---
-# tasks file for base
+# tasks file for base (main.yml)
+
+- import_tasks: apt.yml
+  when: ansible_os_family == 'Debian'
+- import_tasks: yum.yml
+  when: ansible_os_family == 'RedHat'
+- import_tasks: install.yml
+- import_tasks: users.yml
+- import_tasks: clean.yml

@@ -1,0 +1,190 @@
+---
+# tasks file for base (config.yml)
+
+- name: upgrade pip to latest
+  pip:
+    name: pip
+    state: latest
+
+- name: upgrade pip3 to latest
+  pip:
+    name: pip
+    state: latest
+    executable: pip3
+
+- name: install required pip packages
+  pip:
+    name:
+      - virtualenv
+
+- name: install required pip3 packages
+  pip:
+    name:
+      - virtualenv
+    executable: pip3
+
+- name: get termtosvg_version (latest)
+  shell: |
+    echo $(curl --silent "https://api.github.com/repos/nbedos/termtosvg/releases/latest" | jq -r ".tag_name" | sed -E 's/^v([0-9\.]+).*$/\1/g')
+  register: termtosvg_version_output
+  when: (termtosvg_version is not defined) or ((termtosvg_version | regex_replace('^\s+', '') | regex_replace('\s+$', '') | length) == 0)
+
+- set_fact:
+    termtosvg_version: "{{ termtosvg_version_output.stdout }}"
+  when: (termtosvg_version is not defined) or ((termtosvg_version | regex_replace('^\s+', '') | regex_replace('\s+$', '') | length) == 0)
+
+- name: pip install termtosvg (python3)
+  pip:
+    name: "https://github.com/nbedos/termtosvg/archive/{{termtosvg_version}}.tar.gz"
+    executable: pip3
+
+- name: get aliyungocli_version (latest)
+  shell: |
+    echo $(curl --silent "https://api.github.com/repos/aliyun/aliyun-cli/releases/latest" | jq -r ".tag_name" | sed -E 's/^v([0-9\.]+).*$/\1/g')
+  register: aliyungocli_version_output
+  when: 
+    - (aliyungocli_version is not defined) or ((aliyungocli_version | regex_replace('^\s+', '') | regex_replace('\s+$', '') | length) == 0)
+    - cloud_provider is "aliyun"
+
+- set_fact:
+    aliyungocli_version: "{{ aliyungocli_version_output.stdout }}"
+  when: 
+    - (aliyungocli_version is not defined) or ((aliyungocli_version | regex_replace('^\s+', '') | regex_replace('\s+$', '') | length) == 0)
+    - cloud_provider is "aliyun"
+
+- name: download and install aliyuncli (golang)
+  unarchive:
+    src: "https://github.com/aliyun/aliyun-cli/releases/download/v{{ aliyungocli_version }}/aliyun-cli-linux-amd64.tar.gz"
+    dest: /usr/local/bin
+    remote_src: yes
+    owner: root
+    group: root
+    mode: 0755
+  when: 
+    - aliyungocli_version is version('3.0', '>=')
+    - cloud_provider is "aliyun"
+
+- name: get yq_version (latest)
+  shell: |
+    echo $(curl --silent "https://api.github.com/repos/mikefarah/yq/releases/latest" | jq -r ".tag_name" | sed -E 's/^v([0-9\.]+).*$/\1/g')
+  register: yq_version_output
+  when: 
+    - (yq_version is not defined) or ((yq_version | regex_replace('^\s+', '') | regex_replace('\s+$', '') | length) == 0)
+
+- set_fact:
+    yq_version: "{{ yq_version_output.stdout }}"
+  when: 
+    - (yq_version is not defined) or ((yq_version | regex_replace('^\s+', '') | regex_replace('\s+$', '') | length) == 0)
+
+- name: download and install yq
+  get_url:
+    url: "https://github.com/mikefarah/yq/releases/download/{{ yq_version }}/yq_linux_amd64"
+    dest: /usr/bin/yq
+    owner: root
+    group: root
+    mode: 0755
+
+- name: pip install aliyuncli (python)
+  pip:
+    name: aliyuncli
+    version: "{{ aliyunpycli_version }}"
+  when: 
+    - aliyunpycli_version is version('3.0', '<')
+    - cloud_provider is "aliyun"
+
+- name: pip install aliyun python sdk (python)
+  pip:
+    name:
+      - aliyun-python-sdk-aas
+      - aliyun-python-sdk-acs
+      - aliyun-python-sdk-actiontrail
+      - aliyun-python-sdk-aegis
+      - aliyun-python-sdk-afs
+      - aliyun-python-sdk-alidns
+      - aliyun-python-sdk-arms
+      - aliyun-python-sdk-arms4finance
+      - aliyun-python-sdk-batchcompute
+      - aliyun-python-sdk-bsn
+      - aliyun-python-sdk-bss
+      - aliyun-python-sdk-cdn
+      - aliyun-python-sdk-cf
+      - aliyun-python-sdk-chatbot
+      - aliyun-python-sdk-cloudapi
+      - aliyun-python-sdk-cloudauth
+      - aliyun-python-sdk-cloudfw
+      - aliyun-python-sdk-cloudphoto
+      - aliyun-python-sdk-cms
+      #- aliyun-python-sdk-cr
+      - aliyun-python-sdk-crm
+      - aliyun-python-sdk-cs
+      - aliyun-python-sdk-csb
+      - aliyun-python-sdk-dds
+      - aliyun-python-sdk-domain
+      - aliyun-python-sdk-domain-intl
+      - aliyun-python-sdk-drds
+      - aliyun-python-sdk-dysmsapi
+      #- aliyun-python-sdk-dyvmsapi
+      - aliyun-python-sdk-ecs
+      - aliyun-python-sdk-ehpc
+      - aliyun-python-sdk-emr
+      - aliyun-python-sdk-ess
+      - aliyun-python-sdk-faas
+      - aliyun-python-sdk-ft
+      - aliyun-python-sdk-green
+      - aliyun-python-sdk-highddos
+      - aliyun-python-sdk-hpc
+      - aliyun-python-sdk-hsm
+      - aliyun-python-sdk-httpdns
+      - aliyun-python-sdk-imagesearch
+      - aliyun-python-sdk-iot
+      - aliyun-python-sdk-jaq
+      #- aliyun-python-sdk-jarvis
+      - aliyun-python-sdk-live
+      - aliyun-python-sdk-mts
+      - aliyun-python-sdk-nas
+      - aliyun-python-sdk-ocs
+      - aliyun-python-sdk-oms
+      - aliyun-python-sdk-ons
+      - aliyun-python-sdk-ossadmin
+      - aliyun-python-sdk-push
+      #- aliyun-python-sdk-pvtz
+      - aliyun-python-sdk-r-kvstore
+      - aliyun-python-sdk-ram
+      - aliyun-python-sdk-rds
+      - aliyun-python-sdk-risk
+      - aliyun-python-sdk-ros
+      - aliyun-python-sdk-saf
+      - aliyun-python-sdk-sas-api
+      - aliyun-python-sdk-slb
+      - aliyun-python-sdk-sts
+      - aliyun-python-sdk-tesladam
+      - aliyun-python-sdk-teslamaxcompute
+      - aliyun-python-sdk-ubsms
+      - aliyun-python-sdk-vod
+      - aliyun-python-sdk-vpc
+      - aliyun-python-sdk-yundun
+  when: 
+    - aliyunpycli_version is version('3.0', '<')
+    - cloud_provider is "aliyun"
+
+- name: create aliyun cloudmonitor directory
+  file:
+    path: "{{ aliyun_cloudmonitor_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: cloud_provider is "aliyun"
+
+- name: download aliyun cloudmonitor agent
+  unarchive:
+    src: "{{ aliyun_cloudmonitor_url }}"
+    dest: "{{ aliyun_cloudmonitor_dir }}"
+    remote_src: true
+  when: cloud_provider is "aliyun"
+
+- name: install aliyun cloudmonitor agent
+  shell: "{{ aliyun_cloudmonitor_dir }}/wrapper/bin/cloudmonitor.sh install"
+  notify:
+    - stop and disable cloudmonitor
+  when: cloud_provider is "aliyun"

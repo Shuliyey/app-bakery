@@ -1,0 +1,30 @@
+---
+# tasks file for base (clean.yml)
+
+- name: apt autoremove
+  apt:
+    autoremove: yes
+
+- name: get metadata hostname (aliyun)
+  shell: |
+    echo $(curl --silent "http://100.100.100.200/latest/meta-data/hostname")
+  register: metadata_hostname_output
+  when: cloud_provider is "aliyun"
+
+- name: get metadata hostname (aws)
+  shell: |
+    echo $(curl --silent "http://169.254.169.254/latest/meta-data/hostname")
+  register: metadata_hostname_output
+  when: cloud_provider is "aws"
+
+- name: clean entry in /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: "^{{ item }}\\s+{{ metadata_hostname_output.stdout }}(\\s+.*)*$"
+    state: absent
+  with_items: "{{ ansible_all_ipv4_addresses | ipaddr('private') }}"
+
+- name: remove {{ ansible_env.HOME }}/.ssh
+  file:
+    path: "{{ ansible_env.HOME }}/.ssh"
+    state: absent

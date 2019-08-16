@@ -5,6 +5,8 @@ user_list:
   # - { "username": "zeyu" }
   # - { "username": "lulu" }
 
+app:                                      "app"
+description:                              ""
 aliyun_cloudmonitor_dir:                  /usr/local/cloudmonitor
 aliyun_cloudmonitor_version:              1.2.11
 aliyun_cloudmonitor_url:                  "http://cms-download.aliyun.com/release/{{ aliyun_cloudmonitor_version }}/linux64/agent-linux64-{{ aliyun_cloudmonitor_version }}-package.tar.gz"
@@ -15,5 +17,4 @@ termtosvg_version:                        ""
 ssh_ca_cert_path:                         /etc/ssh/ca.pub
 ssh_revoked_keys_path:                    /etc/ssh/revoked_keys
 ssh_authorized_principals_file_keys_path: /etc/ssh/principals
-http_proxy:                               ""
-https_proxy:                              ""
+cloud_provider:                           ""

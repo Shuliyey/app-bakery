@@ -1,6 +1,7 @@
 {
   "variables": {
     "app": "{{env `APP`}}",
+    "description": "{{env `DESCRIPTION`}}",
     "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
     "region": "{{env `AWS_DEFAULT_REGION`}}",
@@ -8,6 +9,7 @@
     "build_version": "{{env `BUILD_VERSION`}}",
     "build_host": "{{env `BUILD_HOST`}}",
     "awscli_version": "{{env `AWSCLI_VERSION`}}",
+    "yq_version": "{{env `YQ_VERSION`}}",
     "termtosvg_version": "{{env `TERMTOSVG_VERSION`}}",
     "instance_type": "t2.small",
     "vpc_id": "{{env `VPC_ID`}}",
@@ -82,6 +84,7 @@
       ],
       "environment_vars": [
         "AWSCLI_VERSION={{user `awscli_version`}}",
+        "YQ_VERSION={{user `yq_version`}}",
         "TERMTOSVG_VERSION={{user `termtosvg_version`}}"
       ]
     },
@@ -91,7 +94,7 @@
       "user": "root",
       "extra_arguments": [
         "--extra-vars",
-        "awscli_version={{user `awscli_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}}"
+        "app={{user `app`}} description={{user `description`}} cloud_provider=aws awscli_version={{user `awscli_version`}} yq_version={{user `yq_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}}"
       ]
     }
   ]

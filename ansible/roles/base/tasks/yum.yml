@@ -1,0 +1,25 @@
+---
+# tasks file for base (yum.yml)
+
+- name: install latest yum packages
+  yum:
+    name:
+      - bash
+      - unzip
+      - gzip
+      - tar
+      - curl
+      - jq
+      - openssh
+      - libssh2
+      - bind-utils
+      - traceroute
+      - tmux
+      - net-tools
+      - lvm2
+      - python3
+      - python3-pip
+      - python-pip
+      - mdadm
+    state: latest
+  when: ansible_os_family == 'RedHat'
