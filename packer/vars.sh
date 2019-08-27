@@ -31,24 +31,39 @@ case "${provider}" in
   aliyun)
     access_key=${ALICLOUD_ACCESS_KEY}
     secret_key=${ALICLOUD_SECRET_KEY}
+    session_token=${SECURITY_TOKEN}
     region=${ALICLOUD_REGION}
-    account_id=$(aliyun --access-key-id=${ALICLOUD_ACCESS_KEY} --access-key-secret=${ALICLOUD_SECRET_KEY} --region=${ALICLOUD_REGION} sts GetCallerIdentity | jq -r ".AccountId")
+    mode="AK"
+
+    if [ "$(echo ${session_token})" ]; then
+      mode="StsToken"
+    fi
+
+    account_id=$(aliyun --mode="${mode}" --access-key-id=${ALICLOUD_ACCESS_KEY} --access-key-secret=${ALICLOUD_SECRET_KEY} --sts-token=${SECURITY_TOKEN} --region=${ALICLOUD_REGION} sts GetCallerIdentity | jq -r ".AccountId")
     ;;
   aws)
     access_key=${AWS_ACCESS_KEY_ID}
     secret_key=${AWS_SECRET_ACCESS_KEY}
+    session_token=${AWS_SESSION_TOKEN}
     region=${AWS_DEFAULT_REGION}
     account_id=$(aws sts get-caller-identity | jq -r ".Account")
     ;;
   *)
     access_key=${ALICLOUD_ACCESS_KEY}
     secret_key=${ALICLOUD_SECRET_KEY}
+    session_token=${SECURITY_TOKEN}
     region=${ALICLOUD_REGION}
-    account_id=$(aliyun --access-key-id=${ALICLOUD_ACCESS_KEY} --access-key-secret=${ALICLOUD_SECRET_KEY} --region=${ALICLOUD_REGION} sts GetCallerIdentity | jq -r ".AccountId")
+    mode="AK"
+
+    if [ "$(echo ${session_token})" ]; then
+      mode="StsToken"
+    fi
+
+    account_id=$(aliyun --mode="${mode}" --access-key-id=${ALICLOUD_ACCESS_KEY} --access-key-secret=${ALICLOUD_SECRET_KEY} --sts-token=${SECURITY_TOKEN} --region=${ALICLOUD_REGION} sts GetCallerIdentity | jq -r ".AccountId")
     ;;
 esac
 
-account_hash=$(echo -n "${access_key}:${secret_key}" | openssl dgst -sha256)
+account_hash=$(echo -n "${access_key}:${secret_key}$([ "$(echo ${session_token})" ] && echo ":$(echo ${session_token})")" | openssl dgst -sha256)
 
 var_file="${dir_name}/vars.d/var.${provider}.${account_id}.${region}.json"
 var_file_local="${dir_name}/vars.d/var.${provider}.${account_id}.${account_hash}.${region}.json"

@@ -4,6 +4,7 @@
       "description": "{{env `DESCRIPTION`}}",
       "access_key": "{{env `ALICLOUD_ACCESS_KEY`}}",
       "secret_key": "{{env `ALICLOUD_SECRET_KEY`}}",
+      "security_token": "{{env `SECURITY_TOKEN`}}",
       "region": "{{env `ALICLOUD_REGION`}}",
       "copy_regions": "{{env `COPY_REGIONS`}}",
       "build_version": "{{env `BUILD_VERSION`}}",
@@ -36,6 +37,7 @@
       "vpc_id": "{{user `vpc_id`}}",
       "vswitch_id": "{{user `vswitch_id`}}",
       "image_force_delete": "true",
+      "security_token": "{{user `security_token`}}",
       "tags": {
         "Name": "{{user `app`}}-base-{{user `build_version`}}",
         "DateTime": "{{isotime \"2006-Jan-02T15:04:05Z\"}}",

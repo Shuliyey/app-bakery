@@ -35,16 +35,19 @@ case "${provider}" in
   aliyun)
     access_key=${ALICLOUD_ACCESS_KEY}
     secret_key=${ALICLOUD_SECRET_KEY}
+    session_token=${SECURITY_TOKEN}
     region=${ALICLOUD_REGION}
     ;;
   aws)
     access_key=${AWS_ACCESS_KEY_ID}
     secret_key=${AWS_SECRET_ACCESS_KEY}
+    session_token=${AWS_SESSION_TOKEN}
     region=${AWS_DEFAULT_REGION}
     ;;
   *)
     access_key=${ALICLOUD_ACCESS_KEY}
     secret_key=${ALICLOUD_SECRET_KEY}
+    session_token=${SECURITY_TOKEN}
     region=${ALICLOUD_REGION}
     ;;
 esac

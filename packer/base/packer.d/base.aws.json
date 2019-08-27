@@ -4,6 +4,7 @@
     "description": "{{env `DESCRIPTION`}}",
     "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "token": "{{env `AWS_SESSION_TOKEN}}",
     "region": "{{env `AWS_DEFAULT_REGION`}}",
     "ami_regions": "{{env `AMI_REGIONS`}}",
     "build_version": "{{env `BUILD_VERSION`}}",
@@ -46,6 +47,7 @@
     "vpc_id": "{{user `vpc_id`}}",
     "subnet_id": "{{user `subnet_id`}}",
     "force_deregister": "true",
+    "token": "{{user `token`}}",
     "tags": {
       "Name": "{{user `app`}}-base-{{user `build_version`}}",
       "DateTime": "{{isotime \"2006-Jan-02T15:04:05Z\"}}",
