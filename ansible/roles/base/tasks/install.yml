@@ -188,3 +188,9 @@
   notify:
     - stop and disable cloudmonitor
   when: cloud_provider is "aliyun"
+
+- name: pip install awscli
+  pip:
+    name:
+      - awscli
+  when: cloud_provider is "aws"
