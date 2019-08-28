@@ -61,9 +61,20 @@
     mode:     0440
     validate: /usr/sbin/visudo -cf %s
 
+- name: "get user_list from ssh keys (non hidden) under {{role_path}}/files/ssh/authorized_keys"
+  find:
+    path: "{{role_path}}/files/ssh/authorized_keys"
+  register: user_list_info
+  delegate_to: localhost
+  when: (user_list is not defined) or (user_list is not sequence)
+
+- set_fact:
+    user_list: "{{ user_list_info.files | map(attribute='path') | map('regex_replace', '^.*/(.+)$', '\\1') | list }}"
+  when: user_list_info is defined
+
 - name: "create {{app}}_admin staff"
   user:
-    name:     "{{ item.username }}"
+    name:     "{{ item.username | item }}"
     state:    present
     groups:   "{{app}}_admin"
   with_items: "{{ user_list }}"
@@ -71,9 +82,9 @@
 
 - name: "create .ssh dir for {{app}}_admin staff"
   file:
-    path:   "/home/{{ item.username }}/.ssh"
-    owner:  "{{ item.username }}"
-    group:  "{{ item.username }}"
+    path:   "/home/{{ item.username | item }}/.ssh"
+    owner:  "{{ item.username | item }}"
+    group:  "{{ item.username | item }}"
     state:  directory
     mode:   0700
   with_items: "{{ user_list }}"
@@ -112,10 +123,10 @@
 
 - name: "ensure ssh keys in authorized_keys of {{app}}_admin staff"
   copy:
-    src:    "ssh/authorized_keys/{{ item.username }}"
-    dest:   "/home/{{ item.username }}/.ssh/authorized_keys"
-    owner:  "{{ item.username }}"
-    group:  "{{ item.username }}"
+    src:    "ssh/authorized_keys/{{ item.username | item }}"
+    dest:   "/home/{{ item.username | item }}/.ssh/authorized_keys"
+    owner:  "{{ item.username | item }}"
+    group:  "{{ item.username | item }}"
     mode:   0600
   with_items: "{{ user_list }}"
   when: user_list is defined
