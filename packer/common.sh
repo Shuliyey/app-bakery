@@ -41,5 +41,5 @@ source_env() {
   local dir_name=$(cd `dirname $0` && pwd)
   local env_file="${1:-${dir_name}/.env}"
 
-  [ -f "${env_file}" ] && eval "$(cat ${env_file} | grep -v -E "^\s*#" | sed -E "s/^ +//g" | grep -v "$(env | sed -E 's/^([^=]+)=.*$/^\1/g')" | sed "s/^/export /g")"
+  [ -f "${env_file}" ] && eval "$(cat ${env_file} | grep -v -E "^\s*#" | sed -E "s/^ +//g" | grep -v "$(env | sed -E 's/^([^=]+)=.*$/^\1/g')" | sed "s/^/export /g")" || true
 }
