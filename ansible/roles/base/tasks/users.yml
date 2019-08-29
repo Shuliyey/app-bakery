@@ -161,12 +161,11 @@
     regexp: '^\s*#(#|\s)*RevokedKeys\s+.*$'
     line: "RevokedKeys {{ ssh_revoked_keys_path }}"
 
-- name: "add {{app}} ssh authorized principals directory"
+- name: "add {{app}} ssh authorized principals file"
   file:
-    path: "{{ ssh_authorized_principals_file_keys_path }}"
+    path: "{{ ssh_authorized_principals_file_path }}"
     group: root
     owner: root
-    state: directory
     mode: 0700
 
 # - name: "add {{app}} ssh AuthorizedPrincipalsFile"
@@ -174,7 +173,7 @@
 #     path: /etc/ssh/sshd_config
 #     state: present
 #     regexp: '^\s*#(#|\s)*AuthorizedPrincipalsFile\s+.*$'
-#     line: "AuthorizedPrincipalsFile {{ ssh_authorized_principals_file_keys_path }}"
+#     line: "AuthorizedPrincipalsFile {{ ssh_authorized_principals_file_path }}"
 
 - name: disable root ssh
   lineinfile:
