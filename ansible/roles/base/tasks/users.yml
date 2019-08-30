@@ -38,7 +38,7 @@
     name:     "{{app}}"
     group:    "{{app}}"
     state:    present
-    comment:  "{{app}}{{ " (" + description + ")" if  else "" }}"
+    comment:  "{{app}}{{ \" (\" + description + \")\" if  else \"\" }}"
 
 - name: "create {{app}} admin group"
   group:
@@ -50,7 +50,7 @@
     name:     "{{app}}_admin"
     group:    "{{app}}_admin"
     state:    present
-    comment:  "{{app}} Admin{{ " (" + description + ")" if  else "" }}"
+    comment:  "{{app}} Admin{{ \" (\" + description + \")\" if  else \"\" }}"
 
 - name: "add {{app}} sudoers permissions"
   copy:

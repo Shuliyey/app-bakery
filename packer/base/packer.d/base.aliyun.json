@@ -18,7 +18,8 @@
       "vpc_id": "{{env `VPC_ID`}}",
       "vswitch_id": "{{env `VSWITCH_ID`}}",
       "http_proxy": "{{env `VPC_HTTP_PROXY`}}",
-      "https_proxy": "{{env `VPC_HTTPS_PROXY`}}"
+      "https_proxy": "{{env `VPC_HTTPS_PROXY`}}",
+      "no_proxy": "{{env `VPC_NO_PROXY`}}"
     },
     "builders": [{
       "type":"alicloud-ecs",
@@ -88,7 +89,7 @@
         "user": "root",
         "extra_arguments": [
           "--extra-vars",
-          "app={{user `app`}} description={{user `description`}} cloud_provider=aliyun aliyun_cloudmonitor_version={{user `aliyun_cloudmonitor_version`}} aliyungocli_version={{user `aliyungocli_version`}} aliyunpycli_version={{user `aliyunpycli_version`}} yq_version={{user `yq_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}}"
+          "app={{user `app`}} description={{user `description`}} cloud_provider=aliyun aliyun_cloudmonitor_version={{user `aliyun_cloudmonitor_version`}} aliyungocli_version={{user `aliyungocli_version`}} aliyunpycli_version={{user `aliyunpycli_version`}} yq_version={{user `yq_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}} no_proxy={{user `no_proxy`}}"
         ]
       }
     ]

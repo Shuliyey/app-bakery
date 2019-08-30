@@ -4,7 +4,7 @@
     "description": "{{env `DESCRIPTION`}}",
     "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
     "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
-    "token": "{{env `AWS_SESSION_TOKEN}}",
+    "token": "{{env `AWS_SESSION_TOKEN`}}",
     "region": "{{env `AWS_DEFAULT_REGION`}}",
     "ami_regions": "{{env `AMI_REGIONS`}}",
     "build_version": "{{env `BUILD_VERSION`}}",
@@ -18,7 +18,8 @@
     "source_ami_filter_name": "amazon-eks-node-1.13-v*",
     "source_ami_filter_owners": "602401143452",
     "http_proxy": "{{env `VPC_HTTP_PROXY`}}",
-    "https_proxy": "{{env `VPC_HTTPS_PROXY`}}"
+    "https_proxy": "{{env `VPC_HTTPS_PROXY`}}",
+    "no_proxy": "{{env `VPC_NO_PROXY`}}"
   },
   "builders": [{
     "type":"amazon-ebs",
@@ -96,7 +97,7 @@
       "user": "root",
       "extra_arguments": [
         "--extra-vars",
-        "app={{user `app`}} description={{user `description`}} cloud_provider=aws awscli_version={{user `awscli_version`}} yq_version={{user `yq_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}}"
+        "app={{user `app`}} description={{user `description`}} cloud_provider=aws awscli_version={{user `awscli_version`}} yq_version={{user `yq_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}} no_proxy={{user `no_proxy`}}"
       ]
     }
   ]

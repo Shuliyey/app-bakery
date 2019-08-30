@@ -7,7 +7,7 @@ aliyun-vars: aliyun-dep
 aliyun: aliyun-dep aliyun-vars
 	./packer.sh --provider=aliyun
 
-aliyun-ansible: aliyun-dep
+aliyun-ansible:
 	ansible-playbook -i hosts ansible/aliyun/main.yml
 
 aws-dep:
@@ -19,5 +19,5 @@ aws-vars: aws-dep
 aws: aws-dep aws-vars
 	./packer.sh --provider=aws
 
-aws-ansible: aws-dep
+aws-ansible:
 	ansible-playbook -i hosts ansible/aws/main.yml
