@@ -9,13 +9,13 @@
   shell: |
     echo $(curl --silent "http://100.100.100.200/latest/meta-data/hostname")
   register: metadata_hostname_output
-  when: cloud_provider is "aliyun"
+  when: cloud_provider == 'aliyun'
 
 - name: get metadata hostname (aws)
   shell: |
     echo $(curl --silent "http://169.254.169.254/latest/meta-data/hostname")
   register: metadata_hostname_output
-  when: cloud_provider is "aws"
+  when: cloud_provider == 'aws'
 
 - name: clean entry in /etc/hosts
   lineinfile:

@@ -1,7 +1,12 @@
 ---
 # tasks file for base (users.yml)
 
-- name: update /etc/skel (termtosvg)
+- name: /etc/skel/.profile stat
+  stat:
+    path: /etc/skel/.profile
+  register: skel_profile_result
+
+- name: update /etc/skel/.profile (termtosvg)
   blockinfile:
     path: /etc/skel/.profile
     block: |
@@ -11,6 +16,26 @@
         termtosvg /tmp/termtosvg-${_id}.svg -c "script -f /tmp/script-${_id}.script"
         exit
       fi
+  when: skel_profile_result.stat.exists
+
+- name: /etc/skel/.bash_profile stat
+  stat:
+    path: /etc/skel/.bash_profile
+  register: skel_bash_profile_result
+
+- name: update /etc/skel/.bash_profile (termtosvg)
+  blockinfile:
+    path: /etc/skel/.bash_profile
+    block: |
+
+      if command -v checkTermToSVG >/dev/null && [ "$(checkTermToSVG)" != "true" ]; then
+        local _id="$(whoami)-$(date +%FT%T%Z -u)"
+        termtosvg /tmp/termtosvg-${_id}.svg -c "script -f /tmp/script-${_id}.script"
+        exit
+      fi
+  when:
+    - not skel_profile_result.stat.exists
+    - skel_bash_profile_result.stat.exists
 
 - name: create /etc/profile.d/termtosvg.sh
   copy:
@@ -38,7 +63,7 @@
     name:     "{{app}}"
     group:    "{{app}}"
     state:    present
-    comment:  "{{app}}{{ \" (\" + description + \")\" if  else \"\" }}"
+    comment:  "{{app}}{{ \" (\" + description + \")\" if (description.strip() | length) > 0 else \"\" }}"
 
 - name: "create {{app}} admin group"
   group:
@@ -50,7 +75,7 @@
     name:     "{{app}}_admin"
     group:    "{{app}}_admin"
     state:    present
-    comment:  "{{app}} Admin{{ \" (\" + description + \")\" if  else \"\" }}"
+    comment:  "{{app}} Admin{{ \" (\" + description + \")\" if (description.strip() | length) > 0 else \"\" }}"
 
 - name: "add {{app}} sudoers permissions"
   copy:

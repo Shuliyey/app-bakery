@@ -1,16 +1,16 @@
 ---
 # tasks file for base (config.yml)
 
-- name: upgrade pip to latest
-  pip:
-    name: pip
-    state: latest
+# - name: upgrade pip3 to latest
+#   pip:
+#     name: pip
+#     state: latest
+#     executable: pip3
 
-- name: upgrade pip3 to latest
-  pip:
-    name: pip
-    state: latest
-    executable: pip3
+# - name: upgrade pip to latest
+#   pip:
+#     name: pip
+#     state: latest
 
 - name: install required pip packages
   pip:
@@ -43,14 +43,14 @@
     echo $(curl --silent "https://api.github.com/repos/aliyun/aliyun-cli/releases/latest" | jq -r ".tag_name" | sed -E 's/^v([0-9\.]+).*$/\1/g')
   register: aliyungocli_version_output
   when: 
+    - cloud_provider == 'aliyun'
     - (aliyungocli_version is not defined) or ((aliyungocli_version | regex_replace('^\s+', '') | regex_replace('\s+$', '') | length) == 0)
-    - cloud_provider is "aliyun"
 
 - set_fact:
     aliyungocli_version: "{{ aliyungocli_version_output.stdout }}"
   when: 
+    - cloud_provider == 'aliyun'
     - (aliyungocli_version is not defined) or ((aliyungocli_version | regex_replace('^\s+', '') | regex_replace('\s+$', '') | length) == 0)
-    - cloud_provider is "aliyun"
 
 - name: download and install aliyuncli (golang)
   unarchive:
@@ -61,8 +61,8 @@
     group: root
     mode: 0755
   when: 
+    - cloud_provider == 'aliyun'
     - aliyungocli_version is version('3.0', '>=')
-    - cloud_provider is "aliyun"
 
 - name: get yq_version (latest)
   shell: |
@@ -89,8 +89,8 @@
     name: aliyuncli
     version: "{{ aliyunpycli_version }}"
   when: 
+    - cloud_provider == 'aliyun'
     - aliyunpycli_version is version('3.0', '<')
-    - cloud_provider is "aliyun"
 
 - name: pip install aliyun python sdk (python)
   pip:
@@ -164,8 +164,8 @@
       - aliyun-python-sdk-vpc
       - aliyun-python-sdk-yundun
   when: 
+    - cloud_provider == 'aliyun'
     - aliyunpycli_version is version('3.0', '<')
-    - cloud_provider is "aliyun"
 
 - name: create aliyun cloudmonitor directory
   file:
@@ -174,23 +174,23 @@
     owner: root
     group: root
     mode: 0755
-  when: cloud_provider is "aliyun"
+  when: cloud_provider == 'aliyun'
 
 - name: download aliyun cloudmonitor agent
   unarchive:
     src: "{{ aliyun_cloudmonitor_url }}"
     dest: "{{ aliyun_cloudmonitor_dir }}"
     remote_src: true
-  when: cloud_provider is "aliyun"
+  when: cloud_provider == 'aliyun'
 
 - name: install aliyun cloudmonitor agent
   shell: "{{ aliyun_cloudmonitor_dir }}/wrapper/bin/cloudmonitor.sh install"
   notify:
     - stop and disable cloudmonitor
-  when: cloud_provider is "aliyun"
+  when: cloud_provider == 'aliyun'
 
 - name: pip install awscli
   pip:
     name:
       - awscli
-  when: cloud_provider is "aws"
+  when: cloud_provider == 'aws'
