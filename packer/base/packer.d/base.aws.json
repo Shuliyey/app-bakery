@@ -22,15 +22,15 @@
     "no_proxy": "{{env `VPC_NO_PROXY`}}"
   },
   "builders": [{
-    "type":"amazon-ebs",
-    "access_key":"{{user `access_key`}}",
-    "secret_key":"{{user `secret_key`}}",
-    "region":"{{user `region`}}",
-    "ami_name":"{{user `app`}}-base-{{isotime \"2006-Jan-02_15-04-05\"}}",
+    "type": "amazon-ebs",
+    "access_key": "{{user `access_key`}}",
+    "secret_key": "{{user `secret_key`}}",
+    "region": "{{user `region`}}",
+    "ami_name": "{{user `app`}}-base-{{isotime \"2006-Jan-02_15-04-05\"}}",
     "run_tags": {
       "Name": "packer-base-{{uuid}}-{{isotime \"2006-Jan-02_15-04-05\"}}"
     },
-    "source_ami":"{{user `source_ami`}}",
+    "source_ami": "{{user `source_ami`}}",
     "source_ami_filter": {
       "filters": {
         "virtualization-type": "hvm",
@@ -40,11 +40,11 @@
       "owners": "{{user `source_ami_filter_owners`}}",
       "most_recent": true
     },
-    "ami_regions":"{{user `ami_regions`}}",
-    "ssh_username":"{{user `ssh_username`}}",
+    "ami_regions": "{{user `ami_regions`}}",
+    "ssh_username": "{{user `ssh_username`}}",
     "instance_type": "{{user `instance_type`}}",
-    "associate_public_ip_address":"true",
-    "ami_description":"{{user `app`}} base image (created on {{isotime}})",
+    "associate_public_ip_address": "true",
+    "ami_description": "{{user `app`}} base image (created on {{isotime}})",
     "vpc_id": "{{user `vpc_id`}}",
     "subnet_id": "{{user `subnet_id`}}",
     "force_deregister": "true",
@@ -94,7 +94,7 @@
     {
       "type": "ansible",
       "playbook_file": "ansible/aws/main.yml",
-      "user": "root",
+      "user": "{{user `ssh_username`}}",
       "extra_arguments": [
         "--extra-vars",
         "app={{user `app`}} description={{user `description`}} cloud_provider=aws awscli_version={{user `awscli_version`}} yq_version={{user `yq_version`}} termtosvg_version={{user `termtosvg_version`}} http_proxy={{user `http_proxy`}} https_proxy={{user `https_proxy`}} no_proxy={{user `no_proxy`}}"
