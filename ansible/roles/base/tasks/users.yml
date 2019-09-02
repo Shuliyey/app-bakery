@@ -81,7 +81,7 @@
   lineinfile:
     path:   /etc/sudoers
     state:  present
-    regexp: '^\s*#(#|\s)*includedir\s+/etc/sudoers.d\s*$'
+    regexp: '^(#|\s)*includedir\s+/etc/sudoers.d\s*$'
     line:   "#includedir /etc/sudoers.d"
       
 - name: "add {{app}} sudoers permissions"
@@ -166,7 +166,7 @@
 
 - name: "copy {{app}} ssh ca cert"
   copy:
-    src:   ssh/authorized_keys/ca
+    src:   ssh/authorized_keys/.ca.pub
     dest:  "{{ ssh_ca_cert_path }}"
     owner: root
     group: root
@@ -176,7 +176,7 @@
   lineinfile:
     path:   /etc/ssh/sshd_config
     state:  present
-    regexp: '^\s*#(#|\s)*TrustedUserCAKeys\s+.*$'
+    regexp: '^(#|\s)*TrustedUserCAKeys\s+.*$'
     line:   "TrustedUserCAKeys {{ ssh_ca_cert_path }}"
 
 - name: "add {{app}} ssh revoked keys"
@@ -191,26 +191,27 @@
   lineinfile:
     path:   /etc/ssh/sshd_config
     state:  present
-    regexp: '^\s*#(#|\s)*RevokedKeys\s+.*$'
+    regexp: '^(#|\s)*RevokedKeys\s+.*$'
     line:   "RevokedKeys {{ ssh_revoked_keys_path }}"
 
 - name: "add {{app}} ssh authorized principals file"
-  file:
-    path:  "{{ ssh_authorized_principals_file_path }}"
+  copy:
+    content: ""
+    dest:  "{{ ssh_authorized_principals_file_path }}"
     group: root
     owner: root
-    mode:  0700
+    mode:  0600
 
 # - name: "add {{app}} ssh AuthorizedPrincipalsFile"
 #   lineinfile:
 #     path:   /etc/ssh/sshd_config
 #     state:  present
-#     regexp: '^\s*#(#|\s)*AuthorizedPrincipalsFile\s+.*$'
+#     regexp: '^(#|\s)*AuthorizedPrincipalsFile\s+.*$'
 #     line:   "AuthorizedPrincipalsFile {{ ssh_authorized_principals_file_path }}"
 
 - name: disable root ssh
   lineinfile:
     path:   /etc/ssh/sshd_config
     state:  present
-    regexp: '^\s*#(#|\s)*PermitRootLogin\s+.*$'
+    regexp: '^(#|\s)*PermitRootLogin\s+.*$'
     line:   "PermitRootLogin no"

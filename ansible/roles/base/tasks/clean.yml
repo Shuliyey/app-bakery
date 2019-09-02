@@ -4,6 +4,12 @@
 - name: apt autoremove
   apt:
     autoremove: yes
+  when: ansible_os_family == 'Debian'
+
+- name: yum autoremove
+  yum:
+    autoremove: yes
+  when: ansible_os_family == 'RedHat'
 
 - name: get metadata hostname (aliyun)
   shell: |
